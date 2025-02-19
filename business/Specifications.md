@@ -16,3 +16,25 @@ The application must follow an event-driven architecture.
 
 The application's backend must be written in typescript with node.js.
 The application's frontend must be written in typescript using the react framework and deployed as an SPA on S3 + cloudfront.
+
+# Architecture diagram
+
+## At schedule time
+```mermaid
+flowchart LR
+    UI --POST timecapsule--> API[API Gateway]
+    API --> Lambda
+    Lambda --Acknowledge time-capsule-->UI
+    Lambda --Store time-capsule-->DDB
+    Lambda --Schedule send event--> EventBridge
+```
+
+## At send time
+```mermaid
+flowchart LR
+    EventBridgeScheduler --Publish send event-->EventBridge
+    EventBridge --Trigger send lambda-->Lambda
+    Lambda --Read time-capsule--> DDB
+    Lambda --Trigger send email--> ThirdParty[Third party email send]
+    Lambda --Store time-capsule sent--> DDB
+```
