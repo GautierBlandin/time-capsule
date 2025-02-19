@@ -1,1 +1,1 @@
-export * from './lib/timecapsule.js';
+export * from './lib/timecapsule';
