@@ -15,9 +15,10 @@
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es2022"
+    "target": "es2022",
+    "paths": {
+      "@timecapsule/eventBus": ["libs/server/eventBus/src/index.ts"],
+      "@timecapsule/di": ["libs/server/di/index.ts"],
+    }
   },
-  "paths": {
-    "@timecapsule/di": "./libs/server/di",
-  }
 }
