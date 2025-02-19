@@ -1,15 +1,24 @@
-import { EventBus } from './eventBus';
+import { EventBus, EventBusOptions } from './eventBus';
 import { Event } from './event.model';
 
 export class FakeEventBus implements EventBus {
-  private publishedEvents: Event<string, unknown>[] = [];
+  private publishedEvents: Array<{
+    event: Event<string, unknown>;
+    options?: EventBusOptions;
+  }> = [];
 
-  async publishEvent<EventName extends string, EventBody>(event: Event<EventName, EventBody>): Promise<void> {
-    this.publishedEvents.push(event);
+  async publishEvent<EventName extends string, EventBody>(
+    event: Event<EventName, EventBody>,
+    options?: EventBusOptions
+  ): Promise<void> {
+    this.publishedEvents.push({ event, options });
     return Promise.resolve();
   }
 
-  getPublishedEvents(): Event<string, unknown>[] {
+  getPublishedEvents(): Array<{
+    event: Event<string, unknown>;
+    options?: EventBusOptions;
+  }> {
     return [...this.publishedEvents];
   }
 }
