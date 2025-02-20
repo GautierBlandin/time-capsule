@@ -15,3 +15,10 @@ Lambda code:
 - Adapter (API Gateway event --> Custom input)
 - Use-case (main business logic)
 - TimeCapsuleRepository (abstraction in front of dynamodb)
+
+Lambda code and infrastructure code for the lambda and connecting components (API Gateway and DDB) is DONE.
+
+Next step: UI code.
+
+We're going to make an SPA using react.
+The SPA will be deployed on S3 + Cloudfront.
