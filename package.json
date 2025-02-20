@@ -12,8 +12,10 @@
     "@pulumi/awsx": "^2.21.0",
     "@pulumi/pulumi": "^3.150.0",
     "aws-lambda": "^1.0.7",
+    "axios": "^1.7.9",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "react-hook-form": "^7.54.2",
     "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.8.0",
     "uuid": "^11.1.0"
