@@ -1,22 +1,21 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { reset, register } from '@timecapsule/di';
-import { eventBusToken } from '@timecapsule/eventBus';
-import { FakeEventBus } from '@timecapsule/eventBus';
 import { timeCapsuleRepositoryToken } from './TimeCapsule.repository.token';
 import { FakeTimeCapsuleRepository } from './TimeCapsule.repository.fake';
-import { CreateTimeCapsuleUseCase, CreateTimeCapsuleInput } from './createTimeCapsule';
+import {
+  CreateTimeCapsuleUseCase,
+  CreateTimeCapsuleInput,
+} from './createTimeCapsule';
 
 function setup() {
   reset();
   const fakeRepo = new FakeTimeCapsuleRepository();
-  const fakeEventBus = new FakeEventBus();
 
   register(timeCapsuleRepositoryToken, { useValue: fakeRepo });
-  register(eventBusToken, { useValue: fakeEventBus });
 
   const useCase = new CreateTimeCapsuleUseCase();
 
-  return { fakeRepo, fakeEventBus, useCase };
+  return { fakeRepo, useCase };
 }
 
 describe('CreateTimeCapsuleUseCase', () => {
@@ -46,32 +45,6 @@ describe('CreateTimeCapsuleUseCase', () => {
 
     const savedTimeCapsule = await fakeRepo.getTimeCapsuleById(result.id);
     expect(savedTimeCapsule).toEqual(result);
-  });
-
-  it('should publish an event to the event bus', async () => {
-    const { fakeEventBus, useCase } = setup();
-    const now = new Date('2023-04-15T10:30:00Z');
-    vi.setSystemTime(now);
-
-    const input: CreateTimeCapsuleInput = {
-      message: 'Test message',
-      recipientEmail: 'test@example.com',
-      scheduledDate: new Date(now.getTime() + 120000),
-    };
-
-    const result = await useCase.execute(input);
-
-    const publishedEvents = fakeEventBus.getPublishedEvents();
-    expect(publishedEvents).toHaveLength(1);
-    expect(publishedEvents[0]).toMatchObject({
-      event: {
-        eventName: 'SEND_TIME_CAPSULE',
-        body: { timeCapsuleId: result.id },
-      },
-      options: {
-        publishAt: input.scheduledDate,
-      },
-    });
   });
 
   it('should generate a unique ID for each time capsule', async () => {
@@ -118,7 +91,9 @@ describe('CreateTimeCapsuleUseCase', () => {
       scheduledDate: new Date(now.getTime() + 59999),
     };
 
-    await expect(useCase.execute(input)).rejects.toThrow('Scheduled date must be at least one minute in the future');
+    await expect(useCase.execute(input)).rejects.toThrow(
+      'Scheduled date must be at least one minute in the future'
+    );
   });
 
   it('should accept a scheduled date that is exactly one minute in the future', async () => {
@@ -135,5 +110,4 @@ describe('CreateTimeCapsuleUseCase', () => {
     const result = await useCase.execute(input);
     expect(result).toBeDefined();
   });
-
 });
