@@ -16,12 +16,19 @@ export class CreateTimeCapsuleUseCase {
   private eventBus: EventBus = inject(eventBusToken);
 
   async execute(input: CreateTimeCapsuleInput): Promise<TimeCapsule> {
+    const now = new Date();
+    const minimumScheduledDate = new Date(now.getTime() + 60000); // 1 minute from now
+
+    if (input.scheduledDate <= minimumScheduledDate) {
+      throw new Error('Scheduled date must be at least one minute in the future');
+    }
+
     const timeCapsule: TimeCapsule = {
       id: uuidv4(),
       message: input.message,
       recipientEmail: input.recipientEmail,
       scheduledDate: input.scheduledDate,
-      createdAt: new Date(),
+      createdAt: now,
       status: 'pending',
     };
 

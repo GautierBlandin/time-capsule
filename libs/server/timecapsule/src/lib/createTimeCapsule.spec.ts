@@ -26,10 +26,13 @@ describe('CreateTimeCapsuleUseCase', () => {
 
   it('should create a time capsule and save it to the repository', async () => {
     const { fakeRepo, useCase } = setup();
+    const now = new Date('2023-04-15T10:30:00Z');
+    vi.setSystemTime(now);
+
     const input: CreateTimeCapsuleInput = {
       message: 'Test message',
       recipientEmail: 'test@example.com',
-      scheduledDate: new Date('2023-05-01T12:00:00Z'),
+      scheduledDate: new Date(now.getTime() + 120000),
     };
 
     const result = await useCase.execute(input);
@@ -47,10 +50,13 @@ describe('CreateTimeCapsuleUseCase', () => {
 
   it('should publish an event to the event bus', async () => {
     const { fakeEventBus, useCase } = setup();
+    const now = new Date('2023-04-15T10:30:00Z');
+    vi.setSystemTime(now);
+
     const input: CreateTimeCapsuleInput = {
       message: 'Test message',
       recipientEmail: 'test@example.com',
-      scheduledDate: new Date('2023-05-01T12:00:00Z'),
+      scheduledDate: new Date(now.getTime() + 120000),
     };
 
     const result = await useCase.execute(input);
@@ -70,10 +76,13 @@ describe('CreateTimeCapsuleUseCase', () => {
 
   it('should generate a unique ID for each time capsule', async () => {
     const { useCase } = setup();
+    const now = new Date('2023-04-15T10:30:00Z');
+    vi.setSystemTime(now);
+
     const input: CreateTimeCapsuleInput = {
       message: 'Test message',
       recipientEmail: 'test@example.com',
-      scheduledDate: new Date('2023-05-01T12:00:00Z'),
+      scheduledDate: new Date(now.getTime() + 120000),
     };
 
     const result1 = await useCase.execute(input);
@@ -84,17 +93,47 @@ describe('CreateTimeCapsuleUseCase', () => {
 
   it('should set the correct creation date', async () => {
     const { useCase } = setup();
+    const now = new Date('2023-04-15T10:30:00Z');
+    vi.setSystemTime(now);
+
     const input: CreateTimeCapsuleInput = {
       message: 'Test message',
       recipientEmail: 'test@example.com',
-      scheduledDate: new Date('2023-05-01T12:00:00Z'),
+      scheduledDate: new Date(now.getTime() + 120000),
     };
-
-    const fakeNow = new Date('2023-04-15T10:30:00Z');
-    vi.setSystemTime(fakeNow);
 
     const result = await useCase.execute(input);
 
-    expect(result.createdAt).toEqual(fakeNow);
+    expect(result.createdAt).toEqual(now);
   });
+
+  it('should throw an error if scheduled date is less than one minute in the future', async () => {
+    const { useCase } = setup();
+    const now = new Date('2023-04-15T10:30:00Z');
+    vi.setSystemTime(now);
+
+    const input: CreateTimeCapsuleInput = {
+      message: 'Test message',
+      recipientEmail: 'test@example.com',
+      scheduledDate: new Date(now.getTime() + 59999),
+    };
+
+    await expect(useCase.execute(input)).rejects.toThrow('Scheduled date must be at least one minute in the future');
+  });
+
+  it('should accept a scheduled date that is exactly one minute in the future', async () => {
+    const { useCase } = setup();
+    const now = new Date('2023-04-15T10:30:00Z');
+    vi.setSystemTime(now);
+
+    const input: CreateTimeCapsuleInput = {
+      message: 'Test message',
+      recipientEmail: 'test@example.com',
+      scheduledDate: new Date(now.getTime() + 60001),
+    };
+
+    const result = await useCase.execute(input);
+    expect(result).toBeDefined();
+  });
+
 });
