@@ -7,6 +7,9 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.751.0",
     "@aws-sdk/util-dynamodb": "^3.751.0",
+    "@pulumi/aws": "^6.69.0",
+    "@pulumi/awsx": "^2.21.0",
+    "@pulumi/pulumi": "^3.150.0",
     "aws-lambda": "^1.0.7",
     "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.8.0",

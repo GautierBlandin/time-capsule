@@ -1,0 +1,16 @@
+{
+  "name": "infrastructure",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/infrastructure/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pulumi up",
+        "cwd": "apps/infrastructure"
+      }
+    }
+  }
+}
