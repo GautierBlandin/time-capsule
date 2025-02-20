@@ -15,8 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@timecapsule/dynamodb": ["libs/server/dynamodb/src/index.ts"],
       "@timecapsule/di": ["libs/server/di/src/index.ts"],
+      "@timecapsule/dynamodb": ["libs/server/dynamodb/src/index.ts"],
       "@timecapsule/eventBus": ["libs/server/eventBus/src/index.ts"],
       "@timecapsule/timecapsule": ["libs/server/timecapsule/src/index.ts"]
     }
