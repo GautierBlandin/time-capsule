@@ -26,15 +26,25 @@ flowchart LR
     API --> Lambda
     Lambda --Acknowledge time-capsule-->UI
     Lambda --Store time-capsule-->DDB
-    Lambda --Schedule send event--> EventBridge
 ```
 
 ## At send time
 ```mermaid
 flowchart LR
-    EventBridgeScheduler --Publish send event-->EventBridge
-    EventBridge --Trigger send lambda-->Lambda
-    Lambda --Read time-capsule--> DDB
+    EventBridgeScheduler --Trigger lambda every 5 minutes-->Lambda
+    Lambda --Read time-capsule to be sent--> DDB
     Lambda --Trigger send email--> ThirdParty[Third party email send]
     Lambda --Store time-capsule sent--> DDB
+```
+
+## Revised at send time for scalability
+```mermaid
+flowchart LR
+    EventBridgeScheduler --Trigger lambda every 5 minutes-->Lambda1
+    Lambda1 --Poll time-capsules to be sent--> DDB
+    Lambda1 --Publish message to sqs--> SQS
+    SQS --Trigger send lambda--> Lambda2
+    Lambda2 --Read time-capsule to be sent--> DDB
+    Lambda2 --Trigger send email--> ThirdParty[Third party email send]
+    Lambda2 --Store time-capsule sent--> DDB
 ```
