@@ -14,6 +14,7 @@ export function App() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>();
   const [submitStatus, setSubmitStatus] = useState<
     'idle' | 'success' | 'error'
@@ -33,11 +34,11 @@ export function App() {
 
       if (response.status === 201) {
         setSubmitStatus('success');
+        reset(); // Clear the form fields
       } else {
         setSubmitStatus('error');
       }
     } catch (error) {
-      console.error('Error submitting time capsule:', error);
       setSubmitStatus('error');
     }
   };
