@@ -4,13 +4,17 @@
   "sourceRoot": "apps/infrastructure/src",
   "projectType": "application",
   "tags": [],
+  "implicitDependencies": ["server"],
   "targets": {
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
         "command": "pulumi up",
         "cwd": "apps/infrastructure"
-      }
+      },
+      "dependsOn": [
+        "^build"
+      ]
     }
   }
 }
