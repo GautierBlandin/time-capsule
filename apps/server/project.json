@@ -13,17 +13,16 @@
         "platform": "node",
         "outputPath": "dist/apps/server",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
         "assets": ["apps/server/src/assets"],
-        "generatePackageJson": true,
-        "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
-        }
+        "generatePackageJson": false,
+        "thirdParty": true,
+        "external": [
+          "@aws-sdk/*"
+        ],
+        "sourcemap": true
       },
       "configurations": {
         "development": {},
@@ -34,31 +33,6 @@
               ".js": ".js"
             }
           }
-        }
-      }
-    },
-    "installBuildDeps": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm i",
-        "cwd": "dist/apps/server"
-      },
-      "dependsOn": ["build"]
-    },
-    "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
-      "options": {
-        "buildTarget": "server:build",
-        "runBuildTargetDependencies": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "server:build:development"
-        },
-        "production": {
-          "buildTarget": "server:build:production"
         }
       }
     },
