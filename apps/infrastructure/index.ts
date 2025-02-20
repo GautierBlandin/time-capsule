@@ -2,8 +2,6 @@ import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as apigateway from '@pulumi/aws-apigateway';
 
-// Get the current stack's config
-const config = new pulumi.Config();
 // Create DynamoDB table
 const timeCapsuleTable = new aws.dynamodb.Table('timeCapsuleTable', {
   attributes: [
