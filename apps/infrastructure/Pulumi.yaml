@@ -1,4 +1,4 @@
-name: pulumi_quickstart
+name: timecapsule
 description: A minimal AWS TypeScript Pulumi program
 runtime:
   name: nodejs
