@@ -69,6 +69,11 @@ const api = new apigateway.RestAPI('api', {
       method: 'POST',
       eventHandler: lambda,
     },
+    {
+      path: '/timecapsule',
+      method: 'OPTIONS',
+      eventHandler: lambda,
+    },
   ],
 });
 
