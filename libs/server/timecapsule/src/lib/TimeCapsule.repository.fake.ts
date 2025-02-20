@@ -8,11 +8,20 @@ export class FakeTimeCapsuleRepository implements TimeCapsuleRepository {
     this.timeCapsules.set(timeCapsule.id, timeCapsule);
   }
 
-  // Additional methods for testing purposes
-  async getTimeCapsuleById(id: string): Promise<TimeCapsule | undefined> {
-    return this.timeCapsules.get(id);
+  async getTimeCapsuleById(id: string): Promise<TimeCapsule | null> {
+    return this.timeCapsules.get(id) || null;
   }
 
+  async getTimeCapsulesBetweenDates(
+    startDate: Date,
+    endDate: Date
+  ): Promise<TimeCapsule[]> {
+    return Array.from(this.timeCapsules.values()).filter(
+      (tc) => tc.scheduledDate >= startDate && tc.scheduledDate <= endDate
+    );
+  }
+
+  // Additional methods for testing purposes
   async getAllTimeCapsules(): Promise<TimeCapsule[]> {
     return Array.from(this.timeCapsules.values());
   }
