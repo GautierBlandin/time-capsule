@@ -17,7 +17,14 @@ export const handler = async (
       };
     }
 
-    const payload: unknown = JSON.parse(event.body);
+    let decodedBody: string;
+    if (event.isBase64Encoded) {
+      decodedBody = Buffer.from(event.body, 'base64').toString('utf-8');
+    } else {
+      decodedBody = event.body;
+    }
+
+    const payload: unknown = JSON.parse(decodedBody);
 
     if (!isValidPayload(payload)) {
       return {
