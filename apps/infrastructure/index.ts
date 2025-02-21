@@ -145,7 +145,8 @@ const cloudfrontOAC = new aws.cloudfront.OriginAccessControl('cloudfrontOAC', {
   signingProtocol: 'sigv4',
 });
 const cachingDisabledPolicyId = '4135ea2d-6df8-44a3-9df3-4b5a84be39ad';
-const allVieverExceptHostHeaderPolicyId =
+const cachingOptimizedPolicyId = '658327ea-f89d-4fab-a63d-7e88639e58f6';
+const allViewerExceptHostHeaderPolicyId =
   'b689b0a8-53d0-40ab-baf2-68738e2966ac';
 
 const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
@@ -176,14 +177,9 @@ const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
     allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
     cachedMethods: ['GET', 'HEAD'],
     targetOriginId: 'S3Origin',
-    forwardedValues: {
-      queryString: false,
-      cookies: { forward: 'none' },
-    },
     viewerProtocolPolicy: 'redirect-to-https',
-    minTtl: 0,
-    defaultTtl: 3600,
-    maxTtl: 86400,
+    cachePolicyId: cachingOptimizedPolicyId,
+    originRequestPolicyId: allViewerExceptHostHeaderPolicyId,
   },
 
   orderedCacheBehaviors: [
@@ -198,17 +194,9 @@ const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
         'PATCH',
         'DELETE',
       ],
-      cachedMethods: ['GET', 'HEAD'],
+      cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
       targetOriginId: 'APIGatewayOrigin',
-      forwardedValues: {
-        queryString: true,
-        headers: ['Origin'],
-        cookies: { forward: 'all' },
-      },
-      minTtl: 0,
-      defaultTtl: 0,
-      maxTtl: 0,
-      compress: true,
+      cachePolicyId: cachingDisabledPolicyId,
       viewerProtocolPolicy: 'redirect-to-https',
     },
   ],
