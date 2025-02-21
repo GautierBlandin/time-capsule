@@ -31,7 +31,7 @@ flowchart LR
 ## At send time
 ```mermaid
 flowchart LR
-    EventBridgeScheduler --Trigger lambda every 5 minutes-->Lambda
+    EventBridgeScheduler --Trigger lambda every 1 minute-->Lambda
     Lambda --Read time-capsule to be sent--> DDB
     Lambda --Trigger send email--> ThirdParty[Third party email send]
     Lambda --Store time-capsule sent--> DDB
