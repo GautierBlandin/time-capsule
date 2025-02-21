@@ -20,9 +20,6 @@
       "@timecapsule/eventBus": ["libs/server/eventBus/src/index.ts"],
       "@timecapsule/server/timecapsule": [
         "libs/server/timecapsule/src/index.ts"
-      ],
-      "@timecapsule/infrastructure/timecapsule": [
-        "libs/infrastructure/timecapsule/src/index.ts"
       ]
     }
   },
