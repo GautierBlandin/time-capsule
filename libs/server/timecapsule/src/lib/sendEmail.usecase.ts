@@ -41,6 +41,7 @@ export class SendEmailUseCase {
       timeCapsule.status = 'sent';
       await this.timeCapsuleRepository.saveTimeCapsule(timeCapsule);
     } catch (error) {
+      console.log('Failed to send email:', error);
       timeCapsule.status = 'failed';
       await this.timeCapsuleRepository.saveTimeCapsule(timeCapsule);
     }

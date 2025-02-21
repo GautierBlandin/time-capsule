@@ -5,16 +5,13 @@ import {
   createTimeCapsuleApiGateway,
   createTimeCapsuleUIBucket,
   createTimeCapsuleCloudFrontDistribution,
-  createLambdaRole,
   createSendTimeCapsuleLambda,
   createScheduledRule,
 } from './lib';
 
 const timeCapsuleTable = createTimeCapsuleDynamoDBTable();
 
-const lambdaRole = createLambdaRole();
-
-const apiLambda = createTimeCapsuleLambda(timeCapsuleTable, lambdaRole);
+const apiLambda = createTimeCapsuleLambda(timeCapsuleTable);
 
 const { api: httpApi, stage } = createTimeCapsuleApiGateway(apiLambda);
 
@@ -30,9 +27,6 @@ const { distribution } = createTimeCapsuleCloudFrontDistribution({
 
 export const cloudFrontUrl = distribution.domainName;
 
-const sendTimeCapsuleLambda = createSendTimeCapsuleLambda(
-  timeCapsuleTable,
-  lambdaRole
-);
+const sendTimeCapsuleLambda = createSendTimeCapsuleLambda(timeCapsuleTable);
 
 createScheduledRule(sendTimeCapsuleLambda);

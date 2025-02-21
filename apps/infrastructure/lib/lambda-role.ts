@@ -1,27 +1,31 @@
 import * as aws from '@pulumi/aws';
 
-export function createLambdaRole(): aws.iam.Role {
-  const role = new aws.iam.Role('lambdaRole', {
-    assumeRolePolicy: JSON.stringify({
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'lambda.amazonaws.com',
+export function createLambdaRole(lambdaName: string): aws.iam.Role {
+  const assumeRole = aws.iam.getPolicyDocument({
+    statements: [
+      {
+        effect: 'Allow',
+        principals: [
+          {
+            type: 'Service',
+            identifiers: ['lambda.amazonaws.com'],
           },
-        },
-      ],
-    }),
+        ],
+        actions: ['sts:AssumeRole'],
+      },
+    ],
+  });
+  const role = new aws.iam.Role(`${lambdaName}Role`, {
+    name: `${lambdaName}Role`,
+    assumeRolePolicy: assumeRole.then((assumeRole) => assumeRole.json),
   });
 
-  new aws.iam.RolePolicyAttachment('lambdaRolePolicy', {
+  new aws.iam.RolePolicyAttachment(`${lambdaName}RolePolicy`, {
     role: role,
     policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
   });
 
-  new aws.iam.RolePolicyAttachment('lambdaDynamoDBPolicy', {
+  new aws.iam.RolePolicyAttachment(`${lambdaName}DynamoDBPolicy`, {
     role: role,
     policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
   });
