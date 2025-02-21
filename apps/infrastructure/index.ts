@@ -184,7 +184,7 @@ const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
 
   orderedCacheBehaviors: [
     {
-      pathPattern: '/dev/*',
+      pathPattern: pulumi.interpolate`/${stack}/*`,
       allowedMethods: [
         'GET',
         'HEAD',
