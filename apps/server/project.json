@@ -14,7 +14,10 @@
         "outputPath": "dist/apps/server",
         "format": ["cjs"],
         "bundle": true,
-        "main": "apps/server/src/main.ts",
+        "main": "apps/server/src/handlers/api.ts",
+        "additionalEntryPoints": [
+          "apps/server/src/handlers/*.ts"
+        ],
         "tsConfig": "apps/server/tsconfig.app.json",
         "assets": ["apps/server/src/assets"],
         "generatePackageJson": false,
