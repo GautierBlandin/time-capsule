@@ -12,7 +12,6 @@ export class FakeEmailService implements EmailServiceFacade {
     subject: string;
     body: string;
   }): Promise<void> {
-    console.log(`Fake email sent to ${to} with subject: ${subject}`);
     this.sentEmails.push({ to, subject, body });
   }
 

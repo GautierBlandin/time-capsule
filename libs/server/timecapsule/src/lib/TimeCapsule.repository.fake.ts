@@ -26,6 +26,10 @@ export class FakeTimeCapsuleRepository implements TimeCapsuleRepository {
     return Array.from(this.timeCapsules.values());
   }
 
+  setTimeCapsules(timeCapsules: TimeCapsule[]): void {
+    this.timeCapsules = new Map(timeCapsules.map((tc) => [tc.id, tc]));
+  }
+
   async clearAllTimeCapsules(): Promise<void> {
     this.timeCapsules.clear();
   }
