@@ -148,18 +148,9 @@ const cachingDisabledPolicyId = '4135ea2d-6df8-44a3-9df3-4b5a84be39ad';
 const allVieverExceptHostHeaderPolicyId =
   'b689b0a8-53d0-40ab-baf2-68738e2966ac';
 
-const distribution = new aws.cloudfront.Distribution('s3Distribution', {
+const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
   enabled: true,
   defaultRootObject: 'index.html',
-
-  // customErrorResponses: [
-  //   {
-  //     errorCode: 403,
-  //     responseCode: 200,
-  //     responsePagePath: '/index.html',
-  //     errorCachingMinTtl: 300,
-  //   },
-  // ],
 
   origins: [
     {
@@ -172,7 +163,6 @@ const distribution = new aws.cloudfront.Distribution('s3Distribution', {
       domainName: pulumi.interpolate`${apiUrl.apply(
         (endpoint) => url.parse(endpoint).hostname
       )}`,
-      originPath: pulumi.interpolate`/${stack}`,
       customOriginConfig: {
         httpPort: 80,
         httpsPort: 443,
@@ -184,31 +174,46 @@ const distribution = new aws.cloudfront.Distribution('s3Distribution', {
 
   defaultCacheBehavior: {
     allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
-    cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
-    compress: true,
-    cachePolicyId: cachingDisabledPolicyId,
+    cachedMethods: ['GET', 'HEAD'],
     targetOriginId: 'S3Origin',
+    forwardedValues: {
+      queryString: false,
+      cookies: { forward: 'none' },
+    },
     viewerProtocolPolicy: 'redirect-to-https',
+    minTtl: 0,
+    defaultTtl: 3600,
+    maxTtl: 86400,
   },
+
   orderedCacheBehaviors: [
     {
-      pathPattern: `/${stage.name}/*`,
+      pathPattern: '/dev/*',
       allowedMethods: [
-        'DELETE',
         'GET',
         'HEAD',
         'OPTIONS',
-        'PATCH',
-        'POST',
         'PUT',
+        'POST',
+        'PATCH',
+        'DELETE',
       ],
-      cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
-      cachePolicyId: cachingDisabledPolicyId,
-      originRequestPolicyId: allVieverExceptHostHeaderPolicyId,
+      cachedMethods: ['GET', 'HEAD'],
       targetOriginId: 'APIGatewayOrigin',
+      forwardedValues: {
+        queryString: true,
+        headers: ['Origin'],
+        cookies: { forward: 'all' },
+      },
+      minTtl: 0,
+      defaultTtl: 0,
+      maxTtl: 0,
+      compress: true,
       viewerProtocolPolicy: 'redirect-to-https',
     },
   ],
+
+  priceClass: 'PriceClass_100',
 
   restrictions: {
     geoRestriction: {
