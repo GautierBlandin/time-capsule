@@ -22,7 +22,7 @@ export function App() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await axios.post('./dev/timecapsule', {
+      const response = await axios.post('./api/timecapsule', {
         message: data.message,
         recipientEmail: data.recipientEmail,
         scheduledDate: new Date(data.scheduledDate).toISOString(),

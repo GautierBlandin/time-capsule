@@ -164,6 +164,7 @@ const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
       domainName: pulumi.interpolate`${apiUrl.apply(
         (endpoint) => url.parse(endpoint).hostname
       )}`,
+      originPath: pulumi.interpolate`/${stack}`,
       customOriginConfig: {
         httpPort: 80,
         httpsPort: 443,
@@ -184,7 +185,7 @@ const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
 
   orderedCacheBehaviors: [
     {
-      pathPattern: pulumi.interpolate`/${stack}/*`,
+      pathPattern: '/api/*',
       allowedMethods: [
         'GET',
         'HEAD',
