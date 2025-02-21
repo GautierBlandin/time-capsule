@@ -33,7 +33,7 @@ flowchart LR
 flowchart LR
     EventBridgeScheduler --Trigger lambda every 1 minute-->Lambda
     Lambda --Read time-capsule to be sent--> DDB
-    Lambda --Trigger send email--> ThirdParty[Third party email send]
+    Lambda --Trigger send email--> Sendgrid[Sendgrid]
     Lambda --Store time-capsule sent--> DDB
 ```
 
@@ -45,6 +45,6 @@ flowchart LR
     Lambda1 --Publish message to sqs--> SQS
     SQS --Trigger send lambda--> Lambda2
     Lambda2 --Read time-capsule to be sent--> DDB
-    Lambda2 --Trigger send email--> ThirdParty[Third party email send]
+    Lambda2 --Trigger send email--> Sendgrid[Sendgrid]
     Lambda2 --Store time-capsule sent--> DDB
 ```
