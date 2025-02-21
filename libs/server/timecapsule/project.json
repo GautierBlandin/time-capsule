@@ -1,5 +1,5 @@
 {
-  "name": "timecapsule",
+  "name": "server-timecapsule",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/server/timecapsule/src",
   "projectType": "library",

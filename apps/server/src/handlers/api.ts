@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import {
   CreateTimeCapsuleUseCase,
   CreateTimeCapsuleInput,
-} from '@timecapsule/timecapsule';
+} from '@timecapsule/server/timecapsule';
 
 const createTimeCapsuleUseCase = new CreateTimeCapsuleUseCase();
 

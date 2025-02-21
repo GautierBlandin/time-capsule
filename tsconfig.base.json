@@ -18,7 +18,12 @@
       "@timecapsule/di": ["libs/server/di/src/index.ts"],
       "@timecapsule/dynamodb": ["libs/server/dynamodb/src/index.ts"],
       "@timecapsule/eventBus": ["libs/server/eventBus/src/index.ts"],
-      "@timecapsule/timecapsule": ["libs/server/timecapsule/src/index.ts"]
+      "@timecapsule/server/timecapsule": [
+        "libs/server/timecapsule/src/index.ts"
+      ],
+      "@timecapsule/infrastructure/timecapsule": [
+        "libs/infrastructure/timecapsule/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

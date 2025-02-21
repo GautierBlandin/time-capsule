@@ -1,4 +1,4 @@
-import { SendEmailUseCase } from '@timecapsule/timecapsule';
+import { SendEmailUseCase } from '@timecapsule/server/timecapsule';
 
 const sendEmailUseCase = new SendEmailUseCase();
 
