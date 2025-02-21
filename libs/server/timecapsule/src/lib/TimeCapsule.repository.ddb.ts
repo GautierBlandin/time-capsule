@@ -79,6 +79,7 @@ export class DynamoDBTimeCapsuleRepository implements TimeCapsuleRepository {
         return createTimeCapsuleFromDynamoDBItem(dynamoDBItem);
       });
     } catch (error) {
+      console.error('Failed to get time capsules between dates:', error);
       throw new Error('Failed to get time capsules between dates');
     }
   }
