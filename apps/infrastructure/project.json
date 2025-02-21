@@ -15,6 +15,13 @@
       "dependsOn": [
         "^build"
       ]
+    },
+    "destroy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pulumi down",
+        "cwd": "apps/infrastructure"
+      }
     }
   }
 }
