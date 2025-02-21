@@ -1,10 +1,10 @@
 import { createInjectionToken } from '@timecapsule/di';
 import { EmailServiceFacade } from './EmailService.facade';
-import { FakeEmailService } from './EmailService.facade.fake';
+import { SendGridEmailService } from './EmailService.facade.sendgrid';
 
 export const emailServiceFacadeToken = createInjectionToken<EmailServiceFacade>(
   'emailServiceFacade',
   {
-    useClass: FakeEmailService,
+    useClass: SendGridEmailService,
   }
 );

@@ -73,12 +73,12 @@ describe('SendEmailUseCase', () => {
     expect(sentEmails).toHaveLength(2);
     expect(sentEmails[0]).toEqual({
       to: 'test1@example.com',
-      subject: 'Your Time Capsule Message',
+      subject: 'A Time Capsule has been sent to you !',
       body: 'Test message 1',
     });
     expect(sentEmails[1]).toEqual({
       to: 'test2@example.com',
-      subject: 'Your Time Capsule Message',
+      subject: 'A Time Capsule has been sent to you !',
       body: 'Test message 2',
     });
 

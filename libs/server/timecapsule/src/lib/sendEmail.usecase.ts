@@ -34,7 +34,7 @@ export class SendEmailUseCase {
     try {
       await this.emailService.sendEmail({
         to: timeCapsule.recipientEmail,
-        subject: 'Your Time Capsule Message',
+        subject: 'A Time Capsule has been sent to you !',
         body: timeCapsule.message,
       });
 

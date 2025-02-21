@@ -5,6 +5,10 @@ export function createSendTimeCapsuleLambda(
   timeCapsuleTable: aws.dynamodb.Table,
   role: aws.iam.Role
 ): aws.lambda.Function {
+  const sendgridApiKey = aws.ssm.getParameter({
+    name: 'sendgrid-api-key',
+  });
+
   return new aws.lambda.Function('sendTimeCapsuleLambda', {
     code: new pulumi.asset.FileArchive(
       '../../dist/apps/server/sendTimeCapsules'
@@ -15,6 +19,7 @@ export function createSendTimeCapsuleLambda(
     environment: {
       variables: {
         TIME_CAPSULE_TABLE: timeCapsuleTable.name,
+        SENDGRID_API_KEY: sendgridApiKey.then((param) => param.value),
       },
     },
   });
