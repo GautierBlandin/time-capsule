@@ -1,16 +1,20 @@
 import * as pulumi from '@pulumi/pulumi';
-import * as aws from '@pulumi/aws';
 import {
   createTimeCapsuleDynamoDBTable,
   createTimeCapsuleLambda,
   createTimeCapsuleApiGateway,
   createTimeCapsuleUIBucket,
   createTimeCapsuleCloudFrontDistribution,
+  createLambdaRole,
+  createSendTimeCapsuleLambda,
+  createScheduledRule,
 } from './lib';
 
 const timeCapsuleTable = createTimeCapsuleDynamoDBTable();
 
-const apiLambda = createTimeCapsuleLambda(timeCapsuleTable);
+const lambdaRole = createLambdaRole();
+
+const apiLambda = createTimeCapsuleLambda(timeCapsuleTable, lambdaRole);
 
 const { api: httpApi, stage } = createTimeCapsuleApiGateway(apiLambda);
 
@@ -26,40 +30,9 @@ const { distribution } = createTimeCapsuleCloudFrontDistribution({
 
 export const cloudFrontUrl = distribution.domainName;
 
-// Create the lambda function for sending time capsules
-const sendTimeCapsuleLambda = new aws.lambda.Function('sendTimeCapsuleLambda', {
-  code: new pulumi.asset.FileArchive('../../dist/apps/server/sendTimeCapsules'),
-  handler: 'sendTimeCapsules.handler',
-  role: apiLambda.role, // Reuse the role from the existing lambda
-  runtime: 'nodejs20.x',
-  environment: {
-    variables: {
-      TIME_CAPSULE_TABLE: timeCapsuleTable.name,
-    },
-  },
-});
-
-// Create a scheduled rule to trigger the lambda every minute
-const scheduledRule = new aws.cloudwatch.EventRule(
-  'sendTimeCapsuleScheduledRule',
-  {
-    scheduleExpression: 'rate(1 minute)',
-  }
+const sendTimeCapsuleLambda = createSendTimeCapsuleLambda(
+  timeCapsuleTable,
+  lambdaRole
 );
 
-// Grant the scheduled rule permission to invoke the Lambda function
-const lambdaPermission = new aws.lambda.Permission(
-  'scheduledRuleLambdaPermission',
-  {
-    action: 'lambda:InvokeFunction',
-    function: sendTimeCapsuleLambda,
-    principal: 'events.amazonaws.com',
-    sourceArn: scheduledRule.arn,
-  }
-);
-
-// Connect the scheduled rule to the lambda function
-const ruleTarget = new aws.cloudwatch.EventTarget('sendTimeCapsuleRuleTarget', {
-  rule: scheduledRule.name,
-  arn: sendTimeCapsuleLambda.arn,
-});
+createScheduledRule(sendTimeCapsuleLambda);
