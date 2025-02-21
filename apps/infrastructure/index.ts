@@ -12,7 +12,7 @@ import {
 
 const timeCapsuleTable = createTimeCapsuleDynamoDBTable();
 
-const lambdaRole = createLambdaRole();
+const lambdaRole = createLambdaRole(timeCapsuleTable);
 
 const apiLambda = createTimeCapsuleLambda(timeCapsuleTable, lambdaRole);
 
