@@ -23,7 +23,7 @@ export function App() {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await axios.post(
-        'https://jmgvlhz0th.execute-api.eu-west-3.amazonaws.com/stage/timecapsule',
+        'https://ycktflqh12.execute-api.eu-west-3.amazonaws.com/dev/timecapsule',
         {
           message: data.message,
           recipientEmail: data.recipientEmail,
