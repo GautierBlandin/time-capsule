@@ -10,9 +10,9 @@ import {
 
 const timeCapsuleTable = createTimeCapsuleDynamoDBTable();
 
-const lambda = createTimeCapsuleLambda(timeCapsuleTable);
+const apiLambda = createTimeCapsuleLambda(timeCapsuleTable);
 
-const { api: httpApi, stage } = createTimeCapsuleApiGateway(lambda);
+const { api: httpApi, stage } = createTimeCapsuleApiGateway(apiLambda);
 
 export const apiUrl = pulumi.interpolate`${httpApi.apiEndpoint}/${stage.name}`;
 
@@ -30,7 +30,7 @@ export const cloudFrontUrl = distribution.domainName;
 const sendTimeCapsuleLambda = new aws.lambda.Function('sendTimeCapsuleLambda', {
   code: new pulumi.asset.FileArchive('../../dist/apps/server/sendTimeCapsules'),
   handler: 'sendTimeCapsules.handler',
-  role: lambda.role, // Reuse the role from the existing lambda
+  role: apiLambda.role, // Reuse the role from the existing lambda
   runtime: 'nodejs20.x',
   environment: {
     variables: {
