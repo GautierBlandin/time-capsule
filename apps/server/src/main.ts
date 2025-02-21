@@ -9,17 +9,10 @@ const createTimeCapsuleUseCase = new CreateTimeCapsuleUseCase();
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*', // Allow all origins
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'OPTIONS,POST',
-  };
-
   // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers,
       body: '',
     };
   }
@@ -58,7 +51,6 @@ export const handler = async (
 
     return {
       statusCode: 201,
-      headers,
       body: JSON.stringify(timeCapsule),
     };
   } catch (error) {
