@@ -2,78 +2,19 @@ import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as synced from '@pulumi/synced-folder';
 import * as url from 'url';
-import { createTimeCapsuleDynamoDBTable, createTimeCapsuleLambda } from './lib';
+import {
+  createTimeCapsuleDynamoDBTable,
+  createTimeCapsuleLambda,
+  createTimeCapsuleApiGateway,
+} from './lib';
 
 const stack = pulumi.getStack();
 
-// Create DynamoDB table
 const timeCapsuleTable = createTimeCapsuleDynamoDBTable();
 
-// Create Lambda function
 const lambda = createTimeCapsuleLambda(timeCapsuleTable);
 
-const httpApi = new aws.apigatewayv2.Api('httpApiGateway', {
-  protocolType: 'HTTP',
-  corsConfiguration: {
-    allowOrigins: ['http://localhost:4200'],
-    allowMethods: ['POST', 'OPTIONS'],
-    allowHeaders: ['*'],
-    exposeHeaders: ['*'],
-    maxAge: 300,
-  },
-});
-
-const lambdaPermission = new aws.lambda.Permission(
-  'lambdaPermission',
-  {
-    action: 'lambda:InvokeFunction',
-    principal: 'apigateway.amazonaws.com',
-    function: lambda,
-    sourceArn: pulumi.interpolate`${httpApi.executionArn}/*/*`,
-  },
-  { dependsOn: [httpApi, lambda] }
-);
-
-const integration = new aws.apigatewayv2.Integration(
-  'lambdaIntegration',
-  {
-    apiId: httpApi.id,
-    integrationType: 'AWS_PROXY',
-    integrationUri: lambda.arn,
-    integrationMethod: 'POST',
-    payloadFormatVersion: '1.0',
-  },
-  { dependsOn: [lambda, httpApi] }
-);
-
-const route = new aws.apigatewayv2.Route(
-  'apiRoute',
-  {
-    apiId: httpApi.id,
-    routeKey: '$default',
-    target: pulumi.interpolate`integrations/${integration.id}`,
-  },
-  {
-    dependsOn: [integration],
-  }
-);
-
-const stage = new aws.apigatewayv2.Stage(
-  'apiStage',
-  {
-    apiId: httpApi.id,
-    name: pulumi.getStack(),
-    routeSettings: [
-      {
-        routeKey: route.routeKey,
-        throttlingBurstLimit: 5000,
-        throttlingRateLimit: 10000,
-      },
-    ],
-    autoDeploy: true,
-  },
-  { dependsOn: [route, integration] }
-);
+const { api: httpApi, stage } = createTimeCapsuleApiGateway(lambda);
 
 // Export the API endpoint
 export const apiUrl = pulumi.interpolate`${httpApi.apiEndpoint}/${stage.name}`;
