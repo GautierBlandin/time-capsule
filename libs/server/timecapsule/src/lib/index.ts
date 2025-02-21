@@ -1,1 +1,1 @@
-export * from './createTimeCapsule';
+export * from './createTimeCapsule.usecase';

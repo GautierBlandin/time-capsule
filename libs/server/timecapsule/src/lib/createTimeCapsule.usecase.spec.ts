@@ -5,7 +5,7 @@ import { FakeTimeCapsuleRepository } from './TimeCapsule.repository.fake';
 import {
   CreateTimeCapsuleUseCase,
   CreateTimeCapsuleInput,
-} from './createTimeCapsule';
+} from './createTimeCapsule.usecase';
 
 function setup() {
   reset();
