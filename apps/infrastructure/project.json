@@ -4,7 +4,7 @@
   "sourceRoot": "apps/infrastructure/src",
   "projectType": "application",
   "tags": [],
-  "implicitDependencies": ["server"],
+  "implicitDependencies": ["server", "ui"],
   "targets": {
     "deploy": {
       "executor": "nx:run-commands",

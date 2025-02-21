@@ -22,15 +22,12 @@ export function App() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await axios.post(
-        'https://ycktflqh12.execute-api.eu-west-3.amazonaws.com/dev/timecapsule',
-        {
-          message: data.message,
-          recipientEmail: data.recipientEmail,
-          scheduledDate: new Date(data.scheduledDate).toISOString(),
-          senderName: data.senderName,
-        }
-      );
+      const response = await axios.post('./dev/timecapsule', {
+        message: data.message,
+        recipientEmail: data.recipientEmail,
+        scheduledDate: new Date(data.scheduledDate).toISOString(),
+        senderName: data.senderName,
+      });
 
       if (response.status === 201) {
         setSubmitStatus('success');
