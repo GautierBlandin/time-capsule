@@ -30,7 +30,7 @@ export function createTimeCapsuleLambda(
   });
 
   return new aws.lambda.Function('timeCapsuleLambda', {
-    code: new pulumi.asset.FileArchive('../../dist/apps/server'),
+    code: new pulumi.asset.FileArchive('../../dist/apps/server/api'),
     handler: 'api.handler',
     role: lambdaRole.arn,
     runtime: 'nodejs20.x',
