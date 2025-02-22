@@ -22,6 +22,8 @@ export function App() {
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  const [successScheduledDate, setSuccessScheduledDate] = useState<string>('');
+
   const onSubmit = async (data: FormData) => {
     try {
       const response = await axios.post('./api/timecapsule', {
@@ -33,6 +35,7 @@ export function App() {
 
       if (response.status === 201) {
         setSubmitStatus('success');
+        setSuccessScheduledDate(data.scheduledDate);
         reset(); // Clear the form fields
       } else {
         setSubmitStatus('error');
@@ -169,7 +172,7 @@ export function App() {
       {submitStatus === 'success' && (
         <div className="mt-6 p-4 bg-green-100 text-green-700 rounded-md">
           Your time capsule has been successfully scheduled! It will be
-          delivered at the specified time.
+          delivered on {new Date(successScheduledDate).toLocaleString()}.
         </div>
       )}
 
