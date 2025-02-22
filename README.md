@@ -82,7 +82,7 @@ nx run-many -t test
 - If /server/timecapsule grows further, split it into directories (e.g. ports, infra, domain, core)
 - Split App.tsx into multiple components and separate business logic from UI
 - Implement a retry mechanism for failed sent time capsules, and notifications for time capsules that fail despite retry
-(split send email lambda into two, one to push to SQS and one to actually send the email. Add a DLQ connected to SNS)
+(split send email lambda into two, one to push ready-to-send timecapsule IDs to SQS and one to actually send the email. Add a DLQ connected to SNS)
 - Improve the design of the GSI on the time capsule table (GSI PK should be high-cardinality, currently it is the opposite).
 - Setup a local dynamodb instance using docker and implement tests for the TimeCapsuleDynamoDBRepository
 - Enable UI developers to bypass cloudfront and directly access the API of their stack to avoid needing to deploy
