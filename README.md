@@ -2,6 +2,19 @@
 
 Timecapsules is an application that allows users to write messages to themselves or others, scheduled to be delivered at a future date. This project fosters reflection and anticipation by enabling users to send their thoughts into the future.
 
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Codebase Architecture](#codebase-architecture)
+    - [Key Components](#key-components)
+    - [Directory Structure](#directory-structure)
+- [Deployment Process](#deployment-process)
+    - [Infrastructure Deployment](#infrastructure-deployment)
+- [Prerequisites](#prerequisites)
+    - [Sendgrid API Key](#sendgrid-api-key)
+- [Testing](#testing)
+- [Potential Improvements](#potential-improvement-for-real-prod-and-improved-maintainability)
+
 ## Project Overview
 
 The Timecapsules application consists of a serverless backend deployed on AWS and a React-based frontend. Users can create time capsules through a web interface, which are then stored and sent at the specified future date.
