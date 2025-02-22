@@ -85,7 +85,8 @@ nx run-many -t test
 (split send email lambda into two, one to push to SQS and one to actually send the email. Add a DLQ connected to SNS)
 - Improve the design of the GSI on the time capsule table (GSI PK should be high-cardinality, currently it is the opposite).
 - Setup a local dynamodb instance using docker and implement tests for the TimeCapsuleDynamoDBRepository
-- Setup a local API so that UI developers can work on the frontend without having to deploy the whole infrastructure
+- Enable UI developers to bypass cloudfront and directly access the API of their stack to avoid needing to deploy
+their UI to S3 to test changes
 - Remove hard-coded sender address
 - Remove hard-coded domain name
 
