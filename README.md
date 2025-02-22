@@ -79,7 +79,7 @@ nx run-many -t test
 ## Technical
 - Setup CI/CD to run tests, lint, and typecheck, with auto deploy to prod on pushes to main
 - Use a HTTP framework for routing and other utilities at the api lambda handler level
-- If /server/timecapsule grows further, split it into directories (e.g. ports, infra, domain, core)
+- If /libs/server/timecapsule grows further, split it into directories (e.g. ports, infra, domain, core)
 - Split App.tsx into multiple components and separate business logic from UI
 - Implement a retry mechanism for failed sent time capsules, and notifications for time capsules that fail despite retry
 (split send email lambda into two, one to push ready-to-send timecapsule IDs to SQS and one to actually send the email. Add a DLQ connected to SNS)
