@@ -6,3 +6,4 @@ export * from './cdn.cloudfront';
 export * from './lambda-role';
 export * from './sendTimeCapsules.lambda';
 export * from './sendTimeCapsules.scheduled-rule';
+export * from './route53';

@@ -7,7 +7,11 @@ import {
   createTimeCapsuleCloudFrontDistribution,
   createSendTimeCapsuleLambda,
   createScheduledRule,
+  createRoute53Record,
 } from './lib';
+
+const domainName =
+  pulumi.getStack() === 'prod' ? 'timecapsules.gautierblandin.com' : undefined;
 
 const timeCapsuleTable = createTimeCapsuleDynamoDBTable();
 
@@ -23,7 +27,12 @@ const { distribution } = createTimeCapsuleCloudFrontDistribution({
   uiBucket,
   apiUrl,
   stack: pulumi.getStack(),
+  domainName,
 });
+
+if (domainName) {
+  createRoute53Record(domainName, distribution);
+}
 
 export const cloudFrontUrl = distribution.domainName;
 

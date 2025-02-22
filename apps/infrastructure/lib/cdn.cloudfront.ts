@@ -6,10 +6,12 @@ export function createTimeCapsuleCloudFrontDistribution({
   uiBucket,
   apiUrl,
   stack,
+  domainName,
 }: {
   uiBucket: aws.s3.Bucket;
   apiUrl: pulumi.Output<string>;
   stack: string;
+  domainName?: string;
 }): { distribution: aws.cloudfront.Distribution } {
   const cloudfrontOAC = new aws.cloudfront.OriginAccessControl(
     'cloudfrontOAC',
@@ -25,71 +27,135 @@ export function createTimeCapsuleCloudFrontDistribution({
   const allViewerExceptHostHeaderPolicyId =
     'b689b0a8-53d0-40ab-baf2-68738e2966ac';
 
-  const distribution = new aws.cloudfront.Distribution('simpleDistribution', {
-    enabled: true,
-    defaultRootObject: 'index.html',
+  const usEast1Provider = new aws.Provider('usEast1Provider', {
+    region: 'us-east-1',
+  });
 
-    origins: [
+  const certificate = domainName
+    ? new aws.acm.Certificate(
+        'timecapsuleCertificate',
+        {
+          domainName: domainName,
+          validationMethod: 'DNS',
+        },
+        { provider: usEast1Provider }
+      )
+    : undefined;
+
+  let certificateValidation: aws.acm.CertificateValidation | undefined =
+    undefined;
+
+  if (certificate) {
+    const zone = pulumi.output(
+      aws.route53.getZone({
+        name: 'gautierblandin.com',
+        privateZone: false,
+      })
+    );
+
+    const validationRecords = certificate.domainValidationOptions.apply(
+      (options) =>
+        options.map(
+          (option, index) =>
+            new aws.route53.Record(`validationRecord-${index}`, {
+              name: option.resourceRecordName,
+              records: [option.resourceRecordValue],
+              ttl: 60,
+              type: option.resourceRecordType,
+              zoneId: zone.id,
+            })
+        )
+    );
+
+    certificateValidation = new aws.acm.CertificateValidation(
+      'cert',
       {
-        domainName: uiBucket.bucketRegionalDomainName,
-        originId: 'S3Origin',
-        originAccessControlId: cloudfrontOAC.id,
+        certificateArn: certificate.arn,
+        validationRecordFqdns: validationRecords.apply((records) =>
+          records.map((record) => record.fqdn)
+        ),
       },
-      {
-        originId: 'APIGatewayOrigin',
-        domainName: pulumi.interpolate`${apiUrl.apply(
-          (endpoint) => url.parse(endpoint).hostname
-        )}`,
-        originPath: pulumi.interpolate`/${stack}`,
-        customOriginConfig: {
-          httpPort: 80,
-          httpsPort: 443,
-          originProtocolPolicy: 'https-only',
-          originSslProtocols: ['TLSv1.2'],
+      { provider: usEast1Provider }
+    );
+  }
+
+  const distribution = new aws.cloudfront.Distribution(
+    'simpleDistribution',
+    {
+      enabled: true,
+      defaultRootObject: 'index.html',
+      aliases: domainName ? [domainName] : undefined,
+      origins: [
+        {
+          domainName: uiBucket.bucketRegionalDomainName,
+          originId: 'S3Origin',
+          originAccessControlId: cloudfrontOAC.id,
+        },
+        {
+          originId: 'APIGatewayOrigin',
+          domainName: pulumi.interpolate`${apiUrl.apply(
+            (endpoint) => url.parse(endpoint).hostname
+          )}`,
+          originPath: pulumi.interpolate`/${stack}`,
+          customOriginConfig: {
+            httpPort: 80,
+            httpsPort: 443,
+            originProtocolPolicy: 'https-only',
+            originSslProtocols: ['TLSv1.2'],
+          },
+        },
+      ],
+
+      defaultCacheBehavior: {
+        allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+        cachedMethods: ['GET', 'HEAD'],
+        targetOriginId: 'S3Origin',
+        viewerProtocolPolicy: 'redirect-to-https',
+        cachePolicyId: cachingOptimizedPolicyId,
+        originRequestPolicyId: allViewerExceptHostHeaderPolicyId,
+      },
+
+      orderedCacheBehaviors: [
+        {
+          pathPattern: '/api/*',
+          allowedMethods: [
+            'GET',
+            'HEAD',
+            'OPTIONS',
+            'PUT',
+            'POST',
+            'PATCH',
+            'DELETE',
+          ],
+          cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+          targetOriginId: 'APIGatewayOrigin',
+          cachePolicyId: cachingDisabledPolicyId,
+          viewerProtocolPolicy: 'redirect-to-https',
+        },
+      ],
+
+      priceClass: 'PriceClass_100',
+
+      restrictions: {
+        geoRestriction: {
+          restrictionType: 'none',
         },
       },
-    ],
 
-    defaultCacheBehavior: {
-      allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
-      cachedMethods: ['GET', 'HEAD'],
-      targetOriginId: 'S3Origin',
-      viewerProtocolPolicy: 'redirect-to-https',
-      cachePolicyId: cachingOptimizedPolicyId,
-      originRequestPolicyId: allViewerExceptHostHeaderPolicyId,
+      viewerCertificate: certificate
+        ? {
+            acmCertificateArn: certificate.arn,
+            sslSupportMethod: 'sni-only',
+            minimumProtocolVersion: 'TLSv1',
+          }
+        : {
+            cloudfrontDefaultCertificate: true,
+          },
     },
-
-    orderedCacheBehaviors: [
-      {
-        pathPattern: '/api/*',
-        allowedMethods: [
-          'GET',
-          'HEAD',
-          'OPTIONS',
-          'PUT',
-          'POST',
-          'PATCH',
-          'DELETE',
-        ],
-        cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
-        targetOriginId: 'APIGatewayOrigin',
-        cachePolicyId: cachingDisabledPolicyId,
-        viewerProtocolPolicy: 'redirect-to-https',
-      },
-    ],
-
-    priceClass: 'PriceClass_100',
-
-    restrictions: {
-      geoRestriction: {
-        restrictionType: 'none',
-      },
-    },
-
-    viewerCertificate: {
-      cloudfrontDefaultCertificate: true,
-    },
-  });
+    {
+      dependsOn: [certificate, certificateValidation],
+    }
+  );
 
   new aws.s3.BucketPolicy(
     'allowCloudFrontBucketPolicy',

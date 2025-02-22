@@ -1,4 +1,5 @@
 import * as aws from '@pulumi/aws';
+import * as pulumi from '@pulumi/pulumi';
 
 export function createLambdaRole(lambdaName: string): aws.iam.Role {
   const assumeRole = aws.iam.getPolicyDocument({
@@ -15,8 +16,9 @@ export function createLambdaRole(lambdaName: string): aws.iam.Role {
       },
     ],
   });
-  const role = new aws.iam.Role(`${lambdaName}Role`, {
-    name: `${lambdaName}Role`,
+
+  const role = new aws.iam.Role(`${pulumi.getStack()}-${lambdaName}-Role`, {
+    name: `${pulumi.getStack()}-${lambdaName}-Role`,
     assumeRolePolicy: assumeRole.then((assumeRole) => assumeRole.json),
   });
 
