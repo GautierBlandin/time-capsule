@@ -15,12 +15,10 @@ export class CreateTimeCapsuleUseCase {
 
   async execute(input: CreateTimeCapsuleInput): Promise<TimeCapsule> {
     const now = new Date();
-    const minimumScheduledDate = new Date(now.getTime() + 60000); // 1 minute from now
+    const minimumScheduledDate = new Date(now.getTime() - 30000);
 
     if (input.scheduledDate <= minimumScheduledDate) {
-      throw new Error(
-        'Scheduled date must be at least one minute in the future'
-      );
+      throw new TooEarlyToScheduleTimeCapsuleError();
     }
 
     const timeCapsule: TimeCapsule = {
@@ -36,5 +34,11 @@ export class CreateTimeCapsuleUseCase {
     await this.timeCapsuleRepository.saveTimeCapsule(timeCapsule);
 
     return timeCapsule;
+  }
+}
+
+export class TooEarlyToScheduleTimeCapsuleError extends Error {
+  constructor() {
+    super('Scheduled date must be in the future');
   }
 }

@@ -2,7 +2,18 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import {
   CreateTimeCapsuleUseCase,
   CreateTimeCapsuleInput,
+  TooEarlyToScheduleTimeCapsuleError,
 } from '@timecapsule/server/timecapsule';
+import { z } from 'zod';
+
+const CreateTimeCapsuleSchema = z.object({
+  message: z.string(),
+  recipientEmail: z.string().email(),
+  scheduledDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Invalid date format',
+  }),
+  senderName: z.string(),
+});
 
 const createTimeCapsuleUseCase = new CreateTimeCapsuleUseCase();
 
@@ -34,18 +45,23 @@ export const handler = async (
 
     const payload: unknown = JSON.parse(decodedBody);
 
-    if (!isValidPayload(payload)) {
+    const result = CreateTimeCapsuleSchema.safeParse(payload);
+
+    if (!result.success) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Invalid request payload' }),
+        body: JSON.stringify({
+          error: 'Invalid request payload',
+          details: result.error.format(),
+        }),
       };
     }
 
     const input: CreateTimeCapsuleInput = {
-      message: payload.message,
-      recipientEmail: payload.recipientEmail,
-      scheduledDate: new Date(payload.scheduledDate),
-      senderName: payload.senderName,
+      message: result.data.message,
+      recipientEmail: result.data.recipientEmail,
+      scheduledDate: new Date(result.data.scheduledDate),
+      senderName: result.data.senderName,
     };
 
     const timeCapsule = await createTimeCapsuleUseCase.execute(input);
@@ -55,6 +71,15 @@ export const handler = async (
       body: JSON.stringify(timeCapsule),
     };
   } catch (error) {
+    if (error instanceof TooEarlyToScheduleTimeCapsuleError) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "We can't send time capsules in the past (yet)!",
+        }),
+      };
+    }
+
     console.error('Error creating time capsule:', error);
     return {
       statusCode: 500,
@@ -62,19 +87,3 @@ export const handler = async (
     };
   }
 };
-
-function isValidPayload(payload: unknown): payload is CreateTimeCapsuleInput {
-  return (
-    typeof payload === 'object' &&
-    payload !== null &&
-    'message' in payload &&
-    typeof payload.message === 'string' &&
-    'recipientEmail' in payload &&
-    typeof payload.recipientEmail === 'string' &&
-    'senderName' in payload && // Add this line
-    typeof payload.senderName === 'string' && // Add this line
-    'scheduledDate' in payload &&
-    typeof payload.scheduledDate === 'string' &&
-    !isNaN(Date.parse(payload.scheduledDate))
-  );
-}

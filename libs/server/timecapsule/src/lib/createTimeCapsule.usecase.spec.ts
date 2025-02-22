@@ -78,27 +78,27 @@ describe('CreateTimeCapsuleUseCase', () => {
     expect(result.createdAt).toEqual(now);
   });
 
-  it('should throw an error if scheduled date is less than one minute in the future', async () => {
+  it('should throw an error if scheduled date is more than 30 seconds in the past', async () => {
     const { useCase } = setup();
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
     const input = CreateTimeCapsuleInputObjectMother.create()
-      .withScheduledDate(new Date(now.getTime() + 59999))
+      .withScheduledDate(new Date(now.getTime() - 40000))
       .build();
 
     await expect(useCase.execute(input)).rejects.toThrow(
-      'Scheduled date must be at least one minute in the future'
+      'Scheduled date must be in the future'
     );
   });
 
-  it('should accept a scheduled date that is exactly one minute in the future', async () => {
+  it('should accept a scheduled date that is now', async () => {
     const { useCase } = setup();
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
     const input = CreateTimeCapsuleInputObjectMother.create()
-      .withScheduledDate(new Date(now.getTime() + 60001))
+      .withScheduledDate(new Date(now.getTime()))
       .build();
 
     const result = await useCase.execute(input);
