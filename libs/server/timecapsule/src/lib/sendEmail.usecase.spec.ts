@@ -5,7 +5,7 @@ import { FakeTimeCapsuleRepository } from './TimeCapsule.repository.fake';
 import { emailServiceFacadeToken } from './EmailService.facade.token';
 import { FakeEmailService } from './EmailService.facade.fake';
 import { SendEmailUseCase } from './sendEmail.usecase';
-import { TimeCapsule } from './TimeCapsule.model';
+import { TimeCapsuleObjectMother } from './TimeCapsule.model.object-mother';
 
 function setup() {
   reset();
@@ -30,39 +30,29 @@ describe('SendEmailUseCase', () => {
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
-    const timeCapsules: TimeCapsule[] = [
-      {
-        id: '1',
-        message: 'Test message 1',
-        recipientEmail: 'test1@example.com',
-        scheduledDate: new Date('2023-04-15T10:25:00Z'),
-        createdAt: new Date('2023-04-15T10:20:00Z'),
-        status: 'pending',
-      },
-      {
-        id: '2',
-        message: 'Test message 2',
-        recipientEmail: 'test2@example.com',
-        scheduledDate: new Date('2023-04-15T10:28:00Z'),
-        createdAt: new Date('2023-04-15T10:23:00Z'),
-        status: 'pending',
-      },
-      {
-        id: '3',
-        message: 'Test message 3',
-        recipientEmail: 'test3@example.com',
-        scheduledDate: new Date('2023-04-15T10:29:00Z'),
-        createdAt: new Date('2023-04-15T10:24:00Z'),
-        status: 'sent',
-      },
-      {
-        id: '4',
-        message: 'Test message 3',
-        recipientEmail: 'test3@example.com',
-        scheduledDate: new Date('2021-04-15T10:29:00Z'),
-        createdAt: new Date('2020-04-15T10:24:00Z'),
-        status: 'failed',
-      },
+    const timeCapsules = [
+      TimeCapsuleObjectMother.create('1')
+        .withStatus('pending')
+        .withSenderName('Gautier')
+        .withScheduledDate(new Date('2023-04-15T10:25:00Z'))
+        .build(),
+      TimeCapsuleObjectMother.create('2')
+        .withStatus('pending')
+        .withSenderName('Paul')
+        .withScheduledDate(new Date('2023-04-15T10:28:00Z'))
+        .build(),
+      TimeCapsuleObjectMother.create('3')
+        .withStatus('sent')
+        .withScheduledDate(new Date('2023-04-15T10:29:00Z'))
+        .build(),
+      TimeCapsuleObjectMother.create('4')
+        .withStatus('failed')
+        .withScheduledDate(new Date('2021-04-15T10:29:00Z'))
+        .build(),
+      TimeCapsuleObjectMother.create('5')
+        .withStatus('pending')
+        .withScheduledDate(new Date('2021-05-15T10:29:00Z'))
+        .build(),
     ];
 
     fakeRepo.setTimeCapsules(timeCapsules);
@@ -72,14 +62,14 @@ describe('SendEmailUseCase', () => {
     const sentEmails = fakeEmailService.getSentEmails();
     expect(sentEmails).toHaveLength(2);
     expect(sentEmails[0]).toEqual({
-      to: 'test1@example.com',
-      subject: 'A Time Capsule has been sent to you !',
-      body: 'Test message 1',
+      to: timeCapsules[0].recipientEmail,
+      subject: 'Gautier sent you a time capsule!',
+      body: timeCapsules[0].message,
     });
     expect(sentEmails[1]).toEqual({
-      to: 'test2@example.com',
-      subject: 'A Time Capsule has been sent to you !',
-      body: 'Test message 2',
+      to: timeCapsules[1].recipientEmail,
+      subject: 'Paul sent you a time capsule!',
+      body: timeCapsules[1].message,
     });
 
     const updatedTimeCapsules = await fakeRepo.getTimeCapsulesBetweenDates(
@@ -96,20 +86,15 @@ describe('SendEmailUseCase', () => {
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
-    const timeCapsules: TimeCapsule[] = [
-      {
-        id: '1',
-        message: 'Test message 1',
-        recipientEmail: 'test1@example.com',
-        scheduledDate: new Date('2023-04-15T10:25:00Z'),
-        createdAt: new Date('2023-04-15T10:20:00Z'),
-        status: 'pending',
-      },
+    const timeCapsules = [
+      TimeCapsuleObjectMother.create('1')
+        .withStatus('pending')
+        .withScheduledDate(new Date('2023-04-15T10:25:00Z'))
+        .build(),
     ];
 
     fakeRepo.setTimeCapsules(timeCapsules);
 
-    // Mock email service to throw an error
     fakeEmailService.sendEmail = vi
       .fn()
       .mockRejectedValue(new Error('Email sending failed'));
