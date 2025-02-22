@@ -17,7 +17,7 @@ export function App() {
     reset,
   } = useForm<FormData>();
   const [submitStatus, setSubmitStatus] = useState<
-    'idle' | 'success' | 'error'
+    'idle' | 'loading' | 'success' | 'error'
   >('idle');
 
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -25,6 +25,9 @@ export function App() {
   const [successScheduledDate, setSuccessScheduledDate] = useState<string>('');
 
   const onSubmit = async (data: FormData) => {
+    if (submitStatus === 'loading') return;
+    setSubmitStatus('loading');
+
     try {
       await axios.post('./api/timecapsule', {
         message: data.message,
@@ -172,9 +175,14 @@ export function App() {
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-3 px-4 rounded-md hover:bg-blue-600 transition duration-300"
+          disabled={submitStatus === 'loading'}
+          className={`w-full text-white py-3 px-4 rounded-md transition duration-300 ${
+            submitStatus === 'loading'
+              ? 'bg-blue-300 cursor-not-allowed'
+              : 'bg-blue-500 hover:bg-blue-600'
+          }`}
         >
-          Send My Time Capsule
+          {submitStatus === 'loading' ? 'Sending...' : 'Send My Time Capsule'}
         </button>
       </form>
 
