@@ -77,7 +77,7 @@ nx run-many -t test
 # Potential improvement for real prod and improved maintainability
 
 ## Technical
-- CI/CD
+- Setup CI/CD to run tests and linting, with auto deploy to prod on merge to main
 - Use a HTTP framework for routing and other utilities at the lambda handler level
 - If /server/timecapsule grows further, split it into directories (e.g. ports, infra, domain, core, etc.)
 - Split App.tsx into multiple components and separate business logic from UI
