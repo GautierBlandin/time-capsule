@@ -1,7 +1,7 @@
 # Functional specifications
 
 Basic idea:
-Time Capsule Messages: An app where users write messages to themselves or others, scheduled to be delivered at a future date, fostering reflection or anticipation.
+Time Capsule Messages: An app where users write messages to themselves or others, scheduled to be delivered at a future date, encouraging reflection or anticipation.
 
 Core workflow:
 - The user goes to the website.
