@@ -41,7 +41,7 @@ flowchart LR
 ## At send time (revised for scalability)
 ```mermaid
 flowchart LR
-    EventBridgeScheduler --Trigger lambda every 5 minutes-->Lambda1
+    EventBridgeScheduler --Trigger lambda every 1 minutes-->Lambda1
     Lambda1[Polling Lambda] --Read time-capsules to be sent by date range--> DDB
     Lambda1 --Publish message to sqs with time-capsule ID--> SQS
     SQS --Trigger send lambda--> Lambda2
