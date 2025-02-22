@@ -1,90 +1,54 @@
 # Timecapsule
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Timecapsule is an application that allows users to write messages to themselves or others, scheduled to be delivered at a future date. This project fosters reflection and anticipation by enabling users to send their thoughts into the future.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Project Overview
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+The Timecapsule application consists of a serverless backend deployed on AWS and a React-based frontend. Users can create time capsules through a web interface, which are then stored and sent at the specified future date.
 
-## Finish your CI setup
+## Codebase Architecture
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/VsyFN0eOL7)
+The project is structured using an Nx workspace, which provides a monorepo setup for efficient development and task-based workflows.
 
+### Key Components
 
-## Generate a library
+1. **Frontend (UI)**: React-based single-page application deployed on S3 and served through CloudFront.
+2. **Backend (Server)**: Node.js with TypeScript, using AWS Lambda, API Gateway, and EventBridge.
+3. **Database**: Amazon DynamoDB for storing and retrieving time capsule data.
+4. **Infrastructure**: AWS services managed with Pulumi IaC.
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
+### Directory Structure
 
-## Run tasks
+- `apps/`: Contains the main applications
+    - `infrastructure/`: Pulumi-based AWS infrastructure code
+    - `server/`: Backend serverless handlers
+    - `ui/`: Frontend React application
+- `libs/`: Shared libraries and modules
+    - `server/`: Backend-related libraries
+        - `dynamodb/`: DynamoDB client and utilities
+        - `timecapsule/`: Core business logic and models
+        - `di/`: Dependency injection utilities
+- `docs/`: Project documentation
+    - `specifications.md`: Functional and technical specifications with architecture diagrams
 
-To build the library use:
+## Deployment Process
 
-```sh
-npx nx build pkg1
-```
+The deployment process involves several steps:
 
-To run any task with Nx use:
+### Infrastructure Deployment
 
-```sh
-npx nx <target> <project-name>
-```
+- Set your AWS credentials:
+  ```
+  export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX
+  export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXd
+  ```
+- Deploy the infrastructure (build steps are automatically triggered thanks to Nx):
+  ```
+  nx deploy infrastructure
+  ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Prerequisites
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
-
-```
-npx nx release
-```
-
-Pass `--dry-run` to see what would happen without actually releasing the library.
-
-[Learn more about Nx release &raquo;](hhttps://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Keep TypeScript project references up to date
-
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
-
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
-
-```sh
-npx nx sync
-```
-
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
-
-```sh
-npx nx sync:check
-```
-
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+#### Sendgrid API Key
+- Setup a Sendgrid account and create an API key
+- In your AWS account, create a parameter store entry with the key `sendgrid-api-key` and the value of the Sendgrid API key
