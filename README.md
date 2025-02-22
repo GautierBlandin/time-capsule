@@ -79,7 +79,7 @@ nx run-many -t test
 - If /server/timecapsule grows further, split it into directories (e.g. ports, infra, domain, core, etc.)
 - Split App.tsx into multiple components
 - Implement a retry mechanism for failed sent time capsules, and notifications for time capsules that fail despite retry (e.g. SQS + SQS DLQ and SNS)
-- Setup a local dynamodb instance user docker and implement tests for the TimeCapsuleDynamoDBRepository
+- Setup a local dynamodb instance using docker and implement tests for the TimeCapsuleDynamoDBRepository
 - Setup a local API so that UI developers can work on the frontend without having to deploy the whole infrastructure
 - Remove hard-coded sender address
 - Remove hard-coded domain name
