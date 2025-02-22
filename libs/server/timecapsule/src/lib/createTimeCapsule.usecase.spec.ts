@@ -2,10 +2,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { reset, register } from '@timecapsule/di';
 import { timeCapsuleRepositoryToken } from './TimeCapsule.repository.token';
 import { FakeTimeCapsuleRepository } from './TimeCapsule.repository.fake';
-import {
-  CreateTimeCapsuleUseCase,
-  CreateTimeCapsuleInput,
-} from './createTimeCapsule.usecase';
+import { CreateTimeCapsuleUseCase } from './createTimeCapsule.usecase';
+import { CreateTimeCapsuleInputObjectMother } from './CreateTimeCapsuleInput.object-mother';
 
 function setup() {
   reset();
@@ -28,11 +26,11 @@ describe('CreateTimeCapsuleUseCase', () => {
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
-    const input: CreateTimeCapsuleInput = {
-      message: 'Test message',
-      recipientEmail: 'test@example.com',
-      scheduledDate: new Date(now.getTime() + 120000),
-    };
+    const input = CreateTimeCapsuleInputObjectMother.create()
+      .withMessage('Test message')
+      .withRecipientEmail('test@example.com')
+      .withScheduledDate(new Date(now.getTime() + 120000))
+      .build();
 
     const result = await useCase.execute(input);
 
@@ -52,11 +50,11 @@ describe('CreateTimeCapsuleUseCase', () => {
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
-    const input: CreateTimeCapsuleInput = {
-      message: 'Test message',
-      recipientEmail: 'test@example.com',
-      scheduledDate: new Date(now.getTime() + 120000),
-    };
+    const input = CreateTimeCapsuleInputObjectMother.create()
+      .withMessage('Test message')
+      .withRecipientEmail('test@example.com')
+      .withScheduledDate(new Date(now.getTime() + 120000))
+      .build();
 
     const result1 = await useCase.execute(input);
     const result2 = await useCase.execute(input);
@@ -69,11 +67,11 @@ describe('CreateTimeCapsuleUseCase', () => {
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
-    const input: CreateTimeCapsuleInput = {
-      message: 'Test message',
-      recipientEmail: 'test@example.com',
-      scheduledDate: new Date(now.getTime() + 120000),
-    };
+    const input = CreateTimeCapsuleInputObjectMother.create()
+      .withMessage('Test message')
+      .withRecipientEmail('test@example.com')
+      .withScheduledDate(new Date(now.getTime() + 120000))
+      .build();
 
     const result = await useCase.execute(input);
 
@@ -85,11 +83,9 @@ describe('CreateTimeCapsuleUseCase', () => {
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
-    const input: CreateTimeCapsuleInput = {
-      message: 'Test message',
-      recipientEmail: 'test@example.com',
-      scheduledDate: new Date(now.getTime() + 59999),
-    };
+    const input = CreateTimeCapsuleInputObjectMother.create()
+      .withScheduledDate(new Date(now.getTime() + 59999))
+      .build();
 
     await expect(useCase.execute(input)).rejects.toThrow(
       'Scheduled date must be at least one minute in the future'
@@ -101,11 +97,9 @@ describe('CreateTimeCapsuleUseCase', () => {
     const now = new Date('2023-04-15T10:30:00Z');
     vi.setSystemTime(now);
 
-    const input: CreateTimeCapsuleInput = {
-      message: 'Test message',
-      recipientEmail: 'test@example.com',
-      scheduledDate: new Date(now.getTime() + 60001),
-    };
+    const input = CreateTimeCapsuleInputObjectMother.create()
+      .withScheduledDate(new Date(now.getTime() + 60001))
+      .build();
 
     const result = await useCase.execute(input);
     expect(result).toBeDefined();

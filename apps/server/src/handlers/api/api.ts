@@ -45,6 +45,7 @@ export const handler = async (
       message: payload.message,
       recipientEmail: payload.recipientEmail,
       scheduledDate: new Date(payload.scheduledDate),
+      senderName: payload.senderName,
     };
 
     const timeCapsule = await createTimeCapsuleUseCase.execute(input);
@@ -70,6 +71,8 @@ function isValidPayload(payload: unknown): payload is CreateTimeCapsuleInput {
     typeof payload.message === 'string' &&
     'recipientEmail' in payload &&
     typeof payload.recipientEmail === 'string' &&
+    'senderName' in payload && // Add this line
+    typeof payload.senderName === 'string' && // Add this line
     'scheduledDate' in payload &&
     typeof payload.scheduledDate === 'string' &&
     !isNaN(Date.parse(payload.scheduledDate))

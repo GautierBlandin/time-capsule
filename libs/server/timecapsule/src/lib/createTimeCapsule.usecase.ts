@@ -4,12 +4,10 @@ import { TimeCapsuleRepository } from './TimeCapsule.repository';
 import { TimeCapsule } from './TimeCapsule.model';
 import { timeCapsuleRepositoryToken } from './TimeCapsule.repository.token';
 
-export interface CreateTimeCapsuleInput {
-  message: string;
-  recipientEmail: string;
-  scheduledDate: Date;
-}
-
+export type CreateTimeCapsuleInput = Omit<
+  TimeCapsule,
+  'id' | 'createdAt' | 'status'
+>;
 export class CreateTimeCapsuleUseCase {
   private timeCapsuleRepository: TimeCapsuleRepository = inject(
     timeCapsuleRepositoryToken
@@ -29,6 +27,7 @@ export class CreateTimeCapsuleUseCase {
       id: uuidv4(),
       message: input.message,
       recipientEmail: input.recipientEmail,
+      senderName: input.senderName,
       scheduledDate: input.scheduledDate,
       createdAt: now,
       status: 'pending',
