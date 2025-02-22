@@ -15,7 +15,7 @@ export class CreateTimeCapsuleUseCase {
 
   async execute(input: CreateTimeCapsuleInput): Promise<TimeCapsule> {
     const now = new Date();
-    const minimumScheduledDate = new Date(now.getTime() - 30000);
+    const minimumScheduledDate = new Date(now.getTime() - 60000);
 
     if (input.scheduledDate <= minimumScheduledDate) {
       throw new TooEarlyToScheduleTimeCapsuleError();

@@ -84,7 +84,7 @@ describe('CreateTimeCapsuleUseCase', () => {
     vi.setSystemTime(now);
 
     const input = CreateTimeCapsuleInputObjectMother.create()
-      .withScheduledDate(new Date(now.getTime() - 40000))
+      .withScheduledDate(new Date(now.getTime() - 70000))
       .build();
 
     await expect(useCase.execute(input)).rejects.toThrow(
