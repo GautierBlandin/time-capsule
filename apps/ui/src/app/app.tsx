@@ -26,32 +26,41 @@ export function App() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await axios.post('./api/timecapsule', {
+      await axios.post('./api/timecapsule', {
         message: data.message,
         recipientEmail: data.recipientEmail,
         scheduledDate: new Date(data.scheduledDate).toISOString(),
         senderName: data.senderName,
       });
 
-      if (response.status === 201) {
-        setSubmitStatus('success');
-        setSuccessScheduledDate(data.scheduledDate);
-        reset(); // Clear the form fields
-      } else {
-        setSubmitStatus('error');
-        setErrorMessage(response.data.message || 'An unknown error occurred');
-      }
+      setSubmitStatus('success');
+      setSuccessScheduledDate(formatDate(data.scheduledDate));
+      reset(); // Clear the form fields
     } catch (error) {
       setSubmitStatus('error');
       if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ error: string }>;
         setErrorMessage(
-          (error as AxiosError<{ message: string }>).response?.data?.message ||
+          axiosError.response?.data?.error ||
+            axiosError.message ||
             'An error occurred while submitting the time capsule'
         );
       } else {
         setErrorMessage('An unknown error occurred');
       }
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
   };
 
   return (
@@ -172,7 +181,7 @@ export function App() {
       {submitStatus === 'success' && (
         <div className="mt-6 p-4 bg-green-100 text-green-700 rounded-md">
           Your time capsule has been successfully scheduled! It will be
-          delivered on {new Date(successScheduledDate).toLocaleString()}.
+          delivered on {successScheduledDate}.
         </div>
       )}
 
