@@ -29,8 +29,14 @@ export class SendGridEmailService implements EmailServiceFacade {
     };
 
     try {
+      const apiKey = process.env['SENDGRID_API_KEY'];
+      if (!apiKey) {
+        throw new Error('SENDGRID_API_KEY environment variable is not set');
+      }
+      sgMail.setApiKey(apiKey);
       await sgMail.send(msg);
     } catch (error) {
+      console.error('Failed to send email:', error);
       throw new Error('Failed to send email');
     }
   }
