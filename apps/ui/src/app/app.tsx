@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface FormData {
   message: string;
@@ -20,6 +20,8 @@ export function App() {
     'idle' | 'success' | 'error'
   >('idle');
 
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   const onSubmit = async (data: FormData) => {
     try {
       const response = await axios.post('./api/timecapsule', {
@@ -34,9 +36,18 @@ export function App() {
         reset(); // Clear the form fields
       } else {
         setSubmitStatus('error');
+        setErrorMessage(response.data.message || 'An unknown error occurred');
       }
     } catch (error) {
       setSubmitStatus('error');
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          (error as AxiosError<{ message: string }>).response?.data?.message ||
+            'An error occurred while submitting the time capsule'
+        );
+      } else {
+        setErrorMessage('An unknown error occurred');
+      }
     }
   };
 
@@ -164,8 +175,7 @@ export function App() {
 
       {submitStatus === 'error' && (
         <div className="mt-6 p-4 bg-red-100 text-red-700 rounded-md">
-          An error occurred while scheduling your time capsule. Please try again
-          later.
+          An error occurred while scheduling your time capsule: {errorMessage}
         </div>
       )}
     </div>
