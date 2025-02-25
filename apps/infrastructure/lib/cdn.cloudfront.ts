@@ -153,7 +153,7 @@ export function createTimeCapsuleCloudFrontDistribution({
           },
     },
     {
-      dependsOn: [certificate, certificateValidation],
+      dependsOn: [certificate, certificateValidation].filter((x) => !!x),
     }
   );
 
