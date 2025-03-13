@@ -3,6 +3,13 @@
     "nrwl.angular-console",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "firsttris.vscode-jest-runner"
+    "firsttris.vscode-jest-runner",
+    "wallabyjs.console-ninja",
+    "continue.continue",
+    "ms-vsliveshare.vsliveshare",
+    "yzhang.markdown-all-in-one",
+    "bierner.markdown-mermaid",
+    "ms-playwright.playwright",
+    "rooveterinaryinc.roo-cline"
   ]
 }
