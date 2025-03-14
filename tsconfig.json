@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "include": ["**/*.ts"],
+  "references": [
+    {
+      "path": "./libs/server/di"
+    },
+    {
+      "path": "./libs/server/dynamodb"
+    },
+    {
+      "path": "./libs/server/timecapsule"
+    }
+  ]
+}

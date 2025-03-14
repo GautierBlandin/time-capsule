@@ -14,12 +14,11 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
     "paths": {
-      "@timecapsule/di": ["libs/server/di/src/index.ts"],
-      "@timecapsule/dynamodb": ["libs/server/dynamodb/src/index.ts"],
+      "@timecapsule/di": ["./libs/server/di/src/index.ts"],
+      "@timecapsule/dynamodb": ["./libs/server/dynamodb/src/index.ts"],
       "@timecapsule/server/timecapsule": [
-        "libs/server/timecapsule/src/index.ts"
+        "./libs/server/timecapsule/src/index.ts"
       ]
     }
   },
